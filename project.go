@@ -109,6 +109,15 @@ func (proj *Project) AddNewFrame() {
 	}
 }
 
+func (proj *Project) RemoveFrame(frame uint16) {
+	if len(proj.Frames) <= 1 {
+		return
+	}
+
+	proj.ClearSelection()
+	proj.Frames = append(proj.Frames[:frame], proj.Frames[frame+1:]...)
+}
+
 func (proj *Project) isInside(x int32, y int32, frame uint16, color *sdl.Color) bool {
 	return x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && AreColorsEqual(&proj.Frames[frame][positionToIndex(x, y, GRID_SIZE)], color)
 }

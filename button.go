@@ -11,9 +11,9 @@ type Button struct {
 	IsActive bool
 }
 
-func NewButton(image *Image, position *sdl.Point) *Button {
+func NewButton(image *Image, position *sdl.Point, width int32) *Button {
 	return &Button{
-		Rect: sdl.Rect{X: position.X, Y: position.Y, W: 64, H: 30},
+		Rect: sdl.Rect{X: position.X, Y: position.Y, W: width, H: 30},
 		Icon: image,
 	}
 }

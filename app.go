@@ -6,16 +6,17 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type ControlIconType uint8
+type ControlType uint8
 type ToolType uint8
 
 const (
-	CIT_START_FRAME ControlIconType = iota
-	CIT_PREV_FRAME
-	CIT_PLAY
-	CIT_NEXT_FRAME
-	CIT_END_FRAME
-	CIT_NEW_FRAME
+	CT_START_FRAME ControlType = iota
+	CT_PREV_FRAME
+	CT_PLAY
+	CT_NEXT_FRAME
+	CT_END_FRAME
+	CT_NEW_FRAME
+	CT_REMOVE_FRAME
 )
 
 const (
@@ -54,17 +55,18 @@ func NewApp(windowWidth int32, windowHeight int32, renderer *sdl.Renderer) (resu
 		Project:     NewProject(),
 		ActiveFrame: 0,
 
-		ControlImages: make([]Image, 6),
+		ControlImages: make([]Image, 7),
 		ToolImages:    make([]Image, 5),
 		Theme:         make(map[string]sdl.Color),
 	}
 
-	result.ControlImages[CIT_START_FRAME] = LoadImage("assets/icons/start_frame.png", renderer)
-	result.ControlImages[CIT_PREV_FRAME] = LoadImage("assets/icons/prev_frame.png", renderer)
-	result.ControlImages[CIT_PLAY] = LoadImage("assets/icons/play.png", renderer)
-	result.ControlImages[CIT_NEXT_FRAME] = LoadImage("assets/icons/next_frame.png", renderer)
-	result.ControlImages[CIT_END_FRAME] = LoadImage("assets/icons/end_frame.png", renderer)
-	result.ControlImages[CIT_NEW_FRAME] = LoadImage("assets/icons/add_frame.png", renderer)
+	result.ControlImages[CT_START_FRAME] = LoadImage("assets/icons/start_frame.png", renderer)
+	result.ControlImages[CT_PREV_FRAME] = LoadImage("assets/icons/prev_frame.png", renderer)
+	result.ControlImages[CT_PLAY] = LoadImage("assets/icons/play.png", renderer)
+	result.ControlImages[CT_NEXT_FRAME] = LoadImage("assets/icons/next_frame.png", renderer)
+	result.ControlImages[CT_END_FRAME] = LoadImage("assets/icons/end_frame.png", renderer)
+	result.ControlImages[CT_NEW_FRAME] = LoadImage("assets/icons/add_frame.png", renderer)
+	result.ControlImages[CT_REMOVE_FRAME] = LoadImage("assets/icons/remove_frame.png", renderer)
 
 	result.ToolImages[TT_BRUSH] = LoadImage("assets/icons/brush.png", renderer)
 	result.ToolImages[TT_ERASER] = LoadImage("assets/icons/eraser.png", renderer)
@@ -145,6 +147,14 @@ func (app *App) GoToLastFrame() {
 func (app *App) CreateNewFrame() {
 	app.Project.AddNewFrame()
 	app.GoToLastFrame()
+}
+
+func (app *App) RemoveFrame() {
+	app.Project.RemoveFrame(app.ActiveFrame)
+
+	if int(app.ActiveFrame) >= len(app.Project.Frames)-1 {
+		app.GoToLastFrame()
+	}
 }
 
 func (app *App) Tick(input *Input) {
