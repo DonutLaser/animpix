@@ -40,6 +40,7 @@ type App struct {
 
 	ControlImages []Image
 	ToolImages    []Image
+	Fonts         map[string]Font
 	Theme         map[string]sdl.Color
 }
 
@@ -47,7 +48,6 @@ var GRID_SIZE int32 = 24
 
 func NewApp(windowWidth int32, windowHeight int32, renderer *sdl.Renderer) (result App) {
 	result = App{
-		Menu:   NewMenu(),
 		Canvas: NewCanvas(),
 		Colors: NewColors(),
 
@@ -57,6 +57,7 @@ func NewApp(windowWidth int32, windowHeight int32, renderer *sdl.Renderer) (resu
 
 		ControlImages: make([]Image, 7),
 		ToolImages:    make([]Image, 5),
+		Fonts:         make(map[string]Font),
 		Theme:         make(map[string]sdl.Color),
 	}
 
@@ -74,6 +75,8 @@ func NewApp(windowWidth int32, windowHeight int32, renderer *sdl.Renderer) (resu
 	result.ToolImages[TT_MOVE] = LoadImage("assets/icons/move.png", renderer)
 	result.ToolImages[TT_SELECT] = LoadImage("assets/icons/select.png", renderer)
 
+	result.Fonts["14px"] = LoadFont("assets/fonts/consola.ttf", 14)
+
 	result.Theme["main"] = sdl.Color{R: 47, G: 52, B: 61, A: 255}
 	result.Theme["main_light"] = sdl.Color{R: 56, G: 64, B: 75, A: 255}
 	result.Theme["inset"] = sdl.Color{R: 28, G: 33, B: 46, A: 255}
@@ -81,6 +84,7 @@ func NewApp(windowWidth int32, windowHeight int32, renderer *sdl.Renderer) (resu
 	result.Theme["highlight"] = sdl.Color{R: 68, G: 73, B: 81, A: 255}
 	result.Theme["icon"] = sdl.Color{R: 120, G: 131, B: 157, A: 255}
 
+	result.Menu = NewMenu(&result)
 	result.Controls = NewControls(&result)
 	result.Toolbar = NewToolbar(&result)
 	result.Colors.SetPalette([]sdl.Color{
@@ -175,6 +179,7 @@ func (app *App) Tick(input *Input) {
 		app.SelectTool(TT_BUCKET)
 	}
 
+	app.Menu.Tick(input, app)
 	app.Controls.Tick(input, app)
 	app.Canvas.Tick(input, app)
 	app.Colors.Tick(input)
@@ -185,11 +190,11 @@ func (app *App) Render(renderer *sdl.Renderer) {
 	renderer.SetDrawColor(0, 0, 0, 255)
 	renderer.Clear()
 
-	app.Menu.Render(renderer, app)
 	app.Controls.Render(renderer, app)
 	app.Canvas.Render(renderer, app)
 	app.Colors.Render(renderer, app)
 	app.Toolbar.Render(renderer, app)
+	app.Menu.Render(renderer, app) // Must be last as it has dropdowns that should go over everything
 
 	renderer.Present()
 }

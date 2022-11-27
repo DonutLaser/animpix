@@ -43,21 +43,11 @@ func (toolbar *Toolbar) SetButtonActive(btn ToolType, activeTool ToolType) {
 }
 
 func (toolbar *Toolbar) Tick(input *Input, app *App) {
-	if toolbar.Buttons[TT_BRUSH].Tick(input) {
-		toolbar.Buttons[app.ActiveTool].SetActive(false)
-		app.SelectTool(TT_BRUSH)
-	} else if toolbar.Buttons[TT_ERASER].Tick(input) {
-		toolbar.Buttons[app.ActiveTool].SetActive(false)
-		app.SelectTool(TT_ERASER)
-	} else if toolbar.Buttons[TT_BUCKET].Tick(input) {
-		toolbar.Buttons[app.ActiveTool].SetActive(false)
-		app.SelectTool(TT_BUCKET)
-	} else if toolbar.Buttons[TT_MOVE].Tick(input) {
-		toolbar.Buttons[app.ActiveTool].SetActive(false)
-		app.SelectTool(TT_MOVE)
-	} else if toolbar.Buttons[TT_SELECT].Tick(input) {
-		toolbar.Buttons[app.ActiveTool].SetActive(false)
-		app.SelectTool(TT_SELECT)
+	for i := TT_BRUSH; i <= TT_SELECT; i++ {
+		if toolbar.Buttons[i].Tick(input) {
+			toolbar.Buttons[app.ActiveTool].SetActive(false)
+			app.SelectTool(i)
+		}
 	}
 }
 
